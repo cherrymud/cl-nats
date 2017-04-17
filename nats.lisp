@@ -1,7 +1,7 @@
 ;;;; cl-nats.lisp
 
 (in-package #:nats)
-                           
+
 (rutils.core:eval-always
   (rutils.core:re-export-symbols '#:nats.connection '#:nats)
   (rutils.core:re-export-symbols '#:nats.vars '#:nats))
@@ -9,11 +9,11 @@
 (defun connect (connection)
   ""
   ; TODO: disconnect first if needed
-  (let* ((socket (usocket:socket-connect (host-of connection) 
+  (let* ((socket (usocket:socket-connect (host-of connection)
                                          (port-of connection)
                                          :element-type '(unsigned-byte 8)))
          (stream (flexi-streams:make-flexi-stream (usocket:socket-stream socket)
-                                                  :external-format 
+                                                  :external-format
                                                   (flexi-streams:make-external-format
                                                     *encoding* :eol-style :crlf))))
     (setf (socket-of connection) socket)
@@ -40,7 +40,7 @@
               queue-group
               sid))
     sid))
-  
+
 (defun unsubscribe (connection sid &key max-wanted)
   ""
   (nats-write (stream-of connection)
@@ -50,10 +50,10 @@
   ""
   (declare (subject subject))
   (nats-write (stream-of connection)
-    (format nil "PUB ~A~@[ ~A~] ~A~%~A" 
-            subject 
+    (format nil "PUB ~A~@[ ~A~] ~A~%~A"
+            subject
             reply-to
-            (flexi-streams:octet-length message :external-format *encoding*) 
+            (flexi-streams:octet-length message :external-format *encoding*)
             message)))
 
 (defun request (connection subject message handler)
@@ -62,8 +62,8 @@
   ;; create a new inbox subject, reusing sid functionality (for now)
   (let* ((inbox (format nil "INBOX.~A" (inc-sid connection)))
          (sid (subscribe connection inbox handler)))
-    (publish connection 
-             subject 
+    (publish connection
+             subject
              message
              :reply-to inbox)))
 
@@ -72,11 +72,14 @@
   ; TODO when connection open only
   (handler-case
       (bt:destroy-thread (thread-of connection))
+    (error (e)
+      (warn "Ignoring error when trying to close NATS socket: ~A" e)))
+  (handler-case
       (usocket:socket-close (socket-of connection))
     (error (e)
       (warn "Ignoring error when trying to close NATS socket: ~A" e))))
 
-(defmacro with-connection ((var &rest args) 
+(defmacro with-connection ((var &rest args)
                            &body body)
   "Makes a new NATS connection with supplied args (see #'make-connection),
 waits for the connection, binds it to var, evaluates body, and finally
