@@ -21,7 +21,10 @@
            #:get-subscription-handler
            #:connectedp
            #:not-connected-p
-           #:wait-for-connection))
+           #:wait-for-connection
+           #:subscription-handler
+           #:fn
+           #:context))          
 
 (defpackage #:nats.subject
   (:use #:cl)
@@ -51,6 +54,7 @@
            #:unsubscribe
            #:publish
            #:request
+           #:sync-request
            #:disconnect
            #:with-connection
 
@@ -77,6 +81,4 @@
            #:*port*
            #:*client-name*
            #:*encoding*
-           #:*debug*
-           ))
-
+           #:*debug*))

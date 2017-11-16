@@ -27,6 +27,13 @@
    (subscription-handlers :initform (make-hash-table) 
                           :accessor subscription-handlers-of)))
 
+;;;; This is to allow setting context, when setting subscription handlers.
+;;;; The context is then sent to the handler function.
+
+(defclass subscription-handler ()
+  ((fn :accessor fn :initarg :fn :initform nil :type function)
+   (context :accessor context :initarg :context :initform nil)))
+
 (defun inc-sid (connection)
   (incf (sid-sequence-of connection)))
 

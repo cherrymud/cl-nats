@@ -47,8 +47,10 @@
            (payload (nats-read (stream-of connection))))
       ;; Read message payload - TODO: Handle \r\n in payload, read exact bye-size
       (if reply-to
-        (funcall handler payload reply-to)
-        (funcall handler payload)))))
+        (format t "DEBUG: reply-to~%"))     
+      (if reply-to
+        (funcall (fn handler) payload reply-to :context (context handler))
+        (funcall (fn handler) payload :context (context handler))))))
 
 (defun make-reader-thread (connection)
   (let ((stream (stream-of connection)))

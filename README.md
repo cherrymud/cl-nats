@@ -22,7 +22,7 @@ cl-nats is not available through quicklisp yet, so clone this repository to some
 
     ;; Simple Subscriber
     (nats:subscribe conn "foo"
-      (lambda (msg)
+      (lambda (msg &key context)
         (format t "Received a message: ~S~%" msg)))
 
     ;; Unsubscribing
